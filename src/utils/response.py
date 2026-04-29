@@ -1,5 +1,5 @@
 from sdks.novavision.src.helper.package import PackageHelper
-from components.StabilityAI.src.models.PackageModel import (
+from capsules.StabilityAI.src.models.PackageModel import (
     PackageModel,
     PackageConfigs,
     ConfigExecutor,

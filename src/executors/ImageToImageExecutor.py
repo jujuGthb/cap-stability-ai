@@ -10,10 +10,10 @@ import requests
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
 from sdks.novavision.src.media.image import Image
-from sdks.novavision.src.base.component import Component
+from sdks.novavision.src.base.capsule import Capsule
 from sdks.novavision.src.helper.executor import Executor
-from components.StabilityAI.src.utils.response import build_response_image_to_image
-from components.StabilityAI.src.models.PackageModel import PackageModel
+from capsules.StabilityAI.src.utils.response import build_response_image_to_image
+from capsules.StabilityAI.src.models.PackageModel import PackageModel
 
 API_HOST = "https://api.stability.ai"
 ENDPOINTS = {
@@ -23,7 +23,7 @@ ENDPOINTS = {
 }
 
 
-class ImageToImageExecutor(Component):
+class ImageToImageExecutor(Capsule):
     def __init__(self, request, bootstrap):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**self.request.data)
