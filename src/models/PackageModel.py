@@ -53,7 +53,6 @@ class OutputImage(Output):
         title = "Output Image"
 
 
-
 class InputPrompt(Config):
     """
     Describe what you want to see in the generated image.
@@ -354,13 +353,18 @@ class PresetTileTexture(Config):
         title = "Tile Texture"
 
 
-class InputPreset(Config):
-    """
-    Optional style preset to guide the generation.
-    Controls the artistic style of the generated content.
-    Leave unset for default generation style.
-    """
-    name: Literal["inputPreset"] = "inputPreset"
+class InputPresetDisabled(Config):
+    name: Literal["disabled"] = "disabled"
+    value: Literal["disabled"] = "disabled"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Disabled"
+
+
+class InputPresetEnabled(Config):
+    name: Literal["enabled"] = "enabled"
     value: Union[
         Preset3dModel, PresetAnalogFilm, PresetAnime, PresetCinematic,
         PresetComicBook, PresetDigitalArt, PresetEnhance, PresetFantasyArt,
@@ -372,8 +376,19 @@ class InputPreset(Config):
     field: Literal["dropdownlist"] = "dropdownlist"
 
     class Config:
+        title = "Enabled"
+
+
+class InputPreset(Config):
+    name: Literal["inputPreset"] = "inputPreset"
+    value: Union[InputPresetDisabled, InputPresetEnabled]
+    type: Literal["object"] = "object"
+    field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
+
+    class Config:
         title = "Style Preset"
         json_schema_extra = {"shortDescription": "Optional style preset"}
+
 
 class InvertMaskDisabled(Config):
     name: Literal["disabled"] = "disabled"
@@ -474,7 +489,7 @@ class PaddingLeft(Config):
 
     class Config:
         title = "Left"
-        json_schema_extra = {"shortDescription": "Pixels to expand left"}
+        json_schema_extra = {"shortDescription": "Pixels to expand left (max 2000)"}
 
 
 class PaddingRight(Config):
@@ -545,7 +560,6 @@ class TextToImageResponse(Response):
 
 
 class TextToImageExecutor(Config):
-
     name: Literal["TextToImageExecutor"] = "TextToImageExecutor"
     value: Union[TextToImageRequest, TextToImageResponse]
     type: Literal["object"] = "object"
@@ -554,6 +568,7 @@ class TextToImageExecutor(Config):
     class Config:
         title = "Text to Image"
         json_schema_extra = {"target": {"value": 0}}
+
 
 class ImageToImageConfigs(Configs):
     inputPrompt: InputPrompt
@@ -584,7 +599,6 @@ class ImageToImageResponse(Response):
 
 
 class ImageToImageExecutor(Config):
-
     name: Literal["ImageToImageExecutor"] = "ImageToImageExecutor"
     value: Union[ImageToImageRequest, ImageToImageResponse]
     type: Literal["object"] = "object"
@@ -593,6 +607,7 @@ class ImageToImageExecutor(Config):
     class Config:
         title = "Image to Image"
         json_schema_extra = {"target": {"value": 0}}
+
 
 class InpaintingConfigs(Configs):
     inputPrompt: InputPrompt
@@ -625,7 +640,6 @@ class InpaintingResponse(Response):
 
 
 class InpaintingExecutor(Config):
-   
     name: Literal["InpaintingExecutor"] = "InpaintingExecutor"
     value: Union[InpaintingRequest, InpaintingResponse]
     type: Literal["object"] = "object"
@@ -669,7 +683,6 @@ class OutpaintingResponse(Response):
 
 
 class OutpaintingExecutor(Config):
-  
     name: Literal["OutpaintingExecutor"] = "OutpaintingExecutor"
     value: Union[OutpaintingRequest, OutpaintingResponse]
     type: Literal["object"] = "object"
@@ -678,6 +691,7 @@ class OutpaintingExecutor(Config):
     class Config:
         title = "Outpainting"
         json_schema_extra = {"target": {"value": 0}}
+
 
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"

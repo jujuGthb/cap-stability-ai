@@ -44,7 +44,7 @@ class InpaintingExecutor(Capsule):
             data["prompt"] = self.prompt
         if self.negative_prompt:
             data["negative_prompt"] = self.negative_prompt
-        if self.preset:
+        if self.preset and self.preset != "disabled":
             data["style_preset"] = self.preset
         seed = self.seed if self.seed else None
         if seed:
