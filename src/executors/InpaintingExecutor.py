@@ -44,9 +44,9 @@ class InpaintingExecutor(Capsule):
             data["prompt"] = self.prompt
         if self.negative_prompt:
             data["negative_prompt"] = self.negative_prompt
-        if self.preset and self.preset != "disabled":
+        if self.preset and self.preset != "presetDisabled":
             data["style_preset"] = self.preset
-        seed = self.seed if self.seed and self.seed != "disabled" else None
+        seed = self.seed if self.seed and self.seed != "seedDisabled" else None
         if seed:
             seed = max(0, min(4294967294, seed))
             data["seed"] = seed
@@ -61,7 +61,7 @@ class InpaintingExecutor(Capsule):
         _, mask = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY)
         mask = cv2.merge([mask, mask, mask])
         mask = cv2.GaussianBlur(mask, (15, 15), 0)
-        if self.invert_mask == "enabled":
+        if self.invert_mask == "invertEnabled":
             mask = cv2.bitwise_not(mask)
         return mask
 

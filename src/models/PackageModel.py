@@ -100,9 +100,6 @@ class InputApiKey(Config):
 
 
 class ModelCore(Config):
-    """
-    Balanced speed and quality. Recommended for most use cases.
-    """
     name: Literal["core"] = "core"
     value: Literal["core"] = "core"
     type: Literal["string"] = "string"
@@ -113,10 +110,6 @@ class ModelCore(Config):
 
 
 class ModelUltra(Config):
-    """
-    Highest quality output. Slower than Core.
-    Best for final renders and high-resolution outputs.
-    """
     name: Literal["ultra"] = "ultra"
     value: Literal["ultra"] = "ultra"
     type: Literal["string"] = "string"
@@ -127,10 +120,6 @@ class ModelUltra(Config):
 
 
 class ModelSD3(Config):
-    """
-    Stable Diffusion 3. More artistic and creative style.
-    Best for illustrations and stylized outputs.
-    """
     name: Literal["sd3"] = "sd3"
     value: Literal["sd3"] = "sd3"
     type: Literal["string"] = "string"
@@ -152,12 +141,6 @@ class InputModel(Config):
 
 
 class Strength(Config):
-    """
-    Controls how much the input image influences the generated output.
-    Range: 0.0 to 1.0.
-    - 0.0: output is nearly identical to the input image.
-    - 1.0: input image is completely ignored, generation is from prompt only.
-    """
     name: Literal["strength"] = "strength"
     value: float
     type: Literal["number"] = "number"
@@ -339,8 +322,8 @@ class PresetTileTexture(Config):
 
 
 class InputPresetDisabled(Config):
-    name: Literal["disabled"] = "disabled"
-    value: Literal["disabled"] = "disabled"
+    name: Literal["presetDisabled"] = "presetDisabled"
+    value: Literal["presetDisabled"] = "presetDisabled"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
 
@@ -349,7 +332,7 @@ class InputPresetDisabled(Config):
 
 
 class InputPresetEnabled(Config):
-    name: Literal["enabled"] = "enabled"
+    name: Literal["presetEnabled"] = "presetEnabled"
     value: Union[
         Preset3dModel, PresetAnalogFilm, PresetAnime, PresetCinematic,
         PresetComicBook, PresetDigitalArt, PresetEnhance, PresetFantasyArt,
@@ -376,8 +359,8 @@ class InputPreset(Config):
 
 
 class SeedDisabled(Config):
-    name: Literal["disabled"] = "disabled"
-    value: Literal["disabled"] = "disabled"
+    name: Literal["seedDisabled"] = "seedDisabled"
+    value: Literal["seedDisabled"] = "seedDisabled"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
 
@@ -386,7 +369,7 @@ class SeedDisabled(Config):
 
 
 class SeedEnabled(Config):
-    name: Literal["enabled"] = "enabled"
+    name: Literal["seedEnabled"] = "seedEnabled"
     value: int
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
@@ -407,8 +390,8 @@ class Seed(Config):
 
 
 class InvertMaskDisabled(Config):
-    name: Literal["disabled"] = "disabled"
-    value: Literal["disabled"] = "disabled"
+    name: Literal["invertDisabled"] = "invertDisabled"
+    value: Literal["invertDisabled"] = "invertDisabled"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
 
@@ -417,8 +400,8 @@ class InvertMaskDisabled(Config):
 
 
 class InvertMaskEnabled(Config):
-    name: Literal["enabled"] = "enabled"
-    value: Literal["enabled"] = "enabled"
+    name: Literal["invertEnabled"] = "invertEnabled"
+    value: Literal["invertEnabled"] = "invertEnabled"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
 
@@ -427,10 +410,6 @@ class InvertMaskEnabled(Config):
 
 
 class InvertMask(Config):
-    """
-    When enabled, inverts the segmentation mask so the background
-    is inpainted instead of the detected foreground object.
-    """
     name: Literal["invertSegmentationMask"] = "invertSegmentationMask"
     value: Union[InvertMaskDisabled, InvertMaskEnabled]
     type: Literal["object"] = "object"
@@ -442,8 +421,8 @@ class InvertMask(Config):
 
 
 class PromptDisabled(Config):
-    name: Literal["disabled"] = "disabled"
-    value: Literal["disabled"] = "disabled"
+    name: Literal["promptDisabled"] = "promptDisabled"
+    value: Literal["promptDisabled"] = "promptDisabled"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
 
@@ -452,7 +431,7 @@ class PromptDisabled(Config):
 
 
 class PromptEnabled(Config):
-    name: Literal["enabled"] = "enabled"
+    name: Literal["promptEnabled"] = "promptEnabled"
     value: str = ""
     type: Literal["string"] = "string"
     field: Literal["textInput"] = "textInput"
@@ -473,10 +452,6 @@ class OutpaintingPrompt(Config):
 
 
 class Creativity(Config):
-    """
-    Controls how creative the outpainting is.
-    Range: 0.0 to 1.0.
-    """
     name: Literal["creativity"] = "creativity"
     value: float
     type: Literal["number"] = "number"
