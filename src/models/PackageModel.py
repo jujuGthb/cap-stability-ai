@@ -711,4 +711,4 @@ class PackageConfigs(Configs):
 class PackageModel(Package):
     name: Literal["StabilityAI"] = "StabilityAI"
     configs: PackageConfigs
-    type: Literal["Capsule"] = "Capsule"
+    type: Literal["capsule"] = "capsule"
