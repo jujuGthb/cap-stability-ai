@@ -33,6 +33,10 @@ class TextToImageExecutor(Capsule):
         self.negative_prompt = self.request.get_param("negativePrompt")
         self.model = self.request.get_param("inputModel")
         self.api_key = self.request.get_param("inputApiKey")
+        
+        print(f"[StabilityAI] prompt: {self.prompt}")
+        print(f"[StabilityAI] model: {self.model}")
+        print(f"[StabilityAI] api_key present: {bool(self.api_key)}")
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
