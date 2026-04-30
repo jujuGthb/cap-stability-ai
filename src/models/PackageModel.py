@@ -100,6 +100,7 @@ class InputApiKey(Config):
 
 
 class ModelCore(Config):
+    """Balanced speed and quality. Recommended for most use cases."""
     name: Literal["core"] = "core"
     value: Literal["core"] = "core"
     type: Literal["string"] = "string"
@@ -110,6 +111,7 @@ class ModelCore(Config):
 
 
 class ModelUltra(Config):
+    """Highest quality output. Slower than Core. Best for final renders and high-resolution outputs."""
     name: Literal["ultra"] = "ultra"
     value: Literal["ultra"] = "ultra"
     type: Literal["string"] = "string"
@@ -120,6 +122,7 @@ class ModelUltra(Config):
 
 
 class ModelSD3(Config):
+    """Stable Diffusion 3. More artistic and creative style. Best for illustrations and stylized outputs."""
     name: Literal["sd3"] = "sd3"
     value: Literal["sd3"] = "sd3"
     type: Literal["string"] = "string"
@@ -141,6 +144,12 @@ class InputModel(Config):
 
 
 class Strength(Config):
+    """
+    Controls how much the input image influences the generated output.
+    Range: 0.0 to 1.0.
+    - 0.0: output is nearly identical to the input image.
+    - 1.0: input image is completely ignored, generation is from prompt only.
+    """
     name: Literal["strength"] = "strength"
     value: float
     type: Literal["number"] = "number"
@@ -348,6 +357,11 @@ class InputPresetEnabled(Config):
 
 
 class InputPreset(Config):
+    """
+    Optional style preset to guide the artistic style of the generated content.
+    When Enabled, select from 17 available presets such as photographic, cinematic, anime, and more.
+    Leave Disabled for default generation style.
+    """
     name: Literal["inputPreset"] = "inputPreset"
     value: Union[InputPresetDisabled, InputPresetEnabled]
     type: Literal["object"] = "object"
@@ -379,6 +393,12 @@ class SeedEnabled(Config):
 
 
 class Seed(Config):
+    """
+    Optional seed for reproducible generation results.
+    When Enabled, enter a number between 0 and 4294967294.
+    Using the same seed with the same prompt will produce identical outputs.
+    Leave Disabled to use a random seed.
+    """
     name: Literal["seed"] = "seed"
     value: Union[SeedDisabled, SeedEnabled]
     type: Literal["object"] = "object"
@@ -410,6 +430,11 @@ class InvertMaskEnabled(Config):
 
 
 class InvertMask(Config):
+    """
+    When Enabled, inverts the segmentation mask so the background
+    is inpainted instead of the detected foreground object.
+    Leave Disabled to inpaint the detected foreground object.
+    """
     name: Literal["invertSegmentationMask"] = "invertSegmentationMask"
     value: Union[InvertMaskDisabled, InvertMaskEnabled]
     type: Literal["object"] = "object"
@@ -441,6 +466,11 @@ class PromptEnabled(Config):
 
 
 class OutpaintingPrompt(Config):
+    """
+    Optional text prompt to guide what appears in the outpainted regions.
+    When Enabled, describe what you want to see in the expanded areas.
+    Leave Disabled to let the model decide based on the original image context.
+    """
     name: Literal["outpaintingPrompt"] = "outpaintingPrompt"
     value: Union[PromptDisabled, PromptEnabled]
     type: Literal["object"] = "object"
@@ -452,6 +482,11 @@ class OutpaintingPrompt(Config):
 
 
 class Creativity(Config):
+    """
+    Controls how creative the outpainting is. Range: 0.0 to 1.0.
+    - 0.0: conservative, stays close to the original image style.
+    - 1.0: highly creative, generates more imaginative content.
+    """
     name: Literal["creativity"] = "creativity"
     value: float
     type: Literal["number"] = "number"
@@ -463,6 +498,7 @@ class Creativity(Config):
 
 
 class PaddingLeft(Config):
+    """Number of pixels to expand on the left side. Maximum value is 2000. Set to 0 to skip this direction."""
     name: Literal["paddingLeft"] = "paddingLeft"
     value: int
     type: Literal["number"] = "number"
@@ -474,6 +510,7 @@ class PaddingLeft(Config):
 
 
 class PaddingRight(Config):
+    """Number of pixels to expand on the right side. Maximum value is 2000. Set to 0 to skip this direction."""
     name: Literal["paddingRight"] = "paddingRight"
     value: int
     type: Literal["number"] = "number"
@@ -485,6 +522,7 @@ class PaddingRight(Config):
 
 
 class PaddingUp(Config):
+    """Number of pixels to expand on the top side. Maximum value is 2000. Set to 0 to skip this direction."""
     name: Literal["paddingUp"] = "paddingUp"
     value: int
     type: Literal["number"] = "number"
@@ -496,6 +534,7 @@ class PaddingUp(Config):
 
 
 class PaddingDown(Config):
+    """Number of pixels to expand on the bottom side. Maximum value is 2000. Set to 0 to skip this direction."""
     name: Literal["paddingDown"] = "paddingDown"
     value: int
     type: Literal["number"] = "number"
@@ -529,6 +568,10 @@ class TextToImageResponse(Response):
 
 
 class TextToImageExecutor(Config):
+    """
+    Generate a new image from a text prompt only.
+    No input image required.
+    """
     name: Literal["TextToImageExecutor"] = "TextToImageExecutor"
     value: Union[TextToImageRequest, TextToImageResponse]
     type: Literal["object"] = "object"
@@ -568,6 +611,10 @@ class ImageToImageResponse(Response):
 
 
 class ImageToImageExecutor(Config):
+    """
+    Generate a new image based on an existing image and a text prompt.
+    Use the Strength parameter to control how much the original image is preserved.
+    """
     name: Literal["ImageToImageExecutor"] = "ImageToImageExecutor"
     value: Union[ImageToImageRequest, ImageToImageResponse]
     type: Literal["object"] = "object"
@@ -609,6 +656,11 @@ class InpaintingResponse(Response):
 
 
 class InpaintingExecutor(Config):
+    """
+    Inpaint regions of an image using an instance segmentation mask.
+    Replace detected objects or the background with AI-generated content
+    guided by a text prompt.
+    """
     name: Literal["InpaintingExecutor"] = "InpaintingExecutor"
     value: Union[InpaintingRequest, InpaintingResponse]
     type: Literal["object"] = "object"
