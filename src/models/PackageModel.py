@@ -106,7 +106,7 @@ class Seed(Config):
     Must be between 0 and 4294967294. Leave at 0 to use a random seed.
     """
     name: Literal["seed"] = "seed"
-    value: int = Field(default=0)
+    value: int
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
@@ -175,7 +175,7 @@ class Strength(Config):
     - 1.0: input image is completely ignored, generation is from prompt only.
     """
     name: Literal["strength"] = "strength"
-    value: float = Field(default=0.3)
+    value: float
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
@@ -361,13 +361,13 @@ class InputPreset(Config):
     Leave unset for default generation style.
     """
     name: Literal["inputPreset"] = "inputPreset"
-    value: Optional[Union[
+    value: Union[
         Preset3dModel, PresetAnalogFilm, PresetAnime, PresetCinematic,
         PresetComicBook, PresetDigitalArt, PresetEnhance, PresetFantasyArt,
         PresetIsometric, PresetLineArt, PresetLowPoly, PresetModelingCompound,
         PresetNeonPunk, PresetOrigami, PresetPhotographic, PresetPixelArt,
         PresetTileTexture
-    ]] = None
+    ]
     type: Literal["object"] = "object"
     field: Literal["dropdownlist"] = "dropdownlist"
 
@@ -401,7 +401,7 @@ class InvertMask(Config):
     is inpainted instead of the detected foreground object.
     """
     name: Literal["invertSegmentationMask"] = "invertSegmentationMask"
-    value: Union[InvertMaskDisabled, InvertMaskEnabled] = InvertMaskDisabled()
+    value: Union[InvertMaskDisabled, InvertMaskEnabled]
     type: Literal["object"] = "object"
     field: Literal["dropdownlist"] = "dropdownlist"
 
@@ -436,7 +436,7 @@ class PromptEnabled(Config):
 
 class OutpaintingPrompt(Config):
     name: Literal["outpaintingPrompt"] = "outpaintingPrompt"
-    value: Union[PromptDisabled, PromptEnabled] = PromptDisabled()
+    value: Union[PromptDisabled, PromptEnabled]
     type: Literal["object"] = "object"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
@@ -453,7 +453,7 @@ class Creativity(Config):
     - 1.0: highly creative, generates more imaginative content.
     """
     name: Literal["creativity"] = "creativity"
-    value: float = Field(default=0.5)
+    value: float
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
@@ -468,13 +468,13 @@ class PaddingLeft(Config):
     Maximum value is 2000. Set to 0 to skip this direction.
     """
     name: Literal["paddingLeft"] = "paddingLeft"
-    value: int = Field(default=0)
+    value: int
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
     class Config:
         title = "Left"
-        json_schema_extra = {"shortDescription": "Pixels to expand left (max 2000)"}
+        json_schema_extra = {"shortDescription": "Pixels to expand left"}
 
 
 class PaddingRight(Config):
@@ -483,7 +483,7 @@ class PaddingRight(Config):
     Maximum value is 2000. Set to 0 to skip this direction.
     """
     name: Literal["paddingRight"] = "paddingRight"
-    value: int = Field(default=0)
+    value: int
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
@@ -498,7 +498,7 @@ class PaddingUp(Config):
     Maximum value is 2000. Set to 0 to skip this direction.
     """
     name: Literal["paddingUp"] = "paddingUp"
-    value: int = Field(default=0)
+    value: int
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
@@ -513,7 +513,7 @@ class PaddingDown(Config):
     Maximum value is 2000. Set to 0 to skip this direction.
     """
     name: Literal["paddingDown"] = "paddingDown"
-    value: int = Field(default=0)
+    value: int
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
@@ -545,10 +545,7 @@ class TextToImageResponse(Response):
 
 
 class TextToImageExecutor(Config):
-    """
-    Generate a new image from a text prompt only.
-    No input image required.
-    """
+
     name: Literal["TextToImageExecutor"] = "TextToImageExecutor"
     value: Union[TextToImageRequest, TextToImageResponse]
     type: Literal["object"] = "object"
@@ -587,10 +584,7 @@ class ImageToImageResponse(Response):
 
 
 class ImageToImageExecutor(Config):
-    """
-    Generate a new image based on an existing image and a text prompt.
-    Use the Strength parameter to control how much the original image is preserved.
-    """
+
     name: Literal["ImageToImageExecutor"] = "ImageToImageExecutor"
     value: Union[ImageToImageRequest, ImageToImageResponse]
     type: Literal["object"] = "object"
@@ -631,11 +625,7 @@ class InpaintingResponse(Response):
 
 
 class InpaintingExecutor(Config):
-    """
-    Inpaint regions of an image using an instance segmentation mask.
-    Replace detected objects or the background with AI-generated content
-    guided by a text prompt.
-    """
+   
     name: Literal["InpaintingExecutor"] = "InpaintingExecutor"
     value: Union[InpaintingRequest, InpaintingResponse]
     type: Literal["object"] = "object"
@@ -679,11 +669,7 @@ class OutpaintingResponse(Response):
 
 
 class OutpaintingExecutor(Config):
-    """
-    Expand an image beyond its original borders using AI-generated content.
-    At least one direction (left, right, up, down) must be greater than 0.
-    Use the Creativity parameter to control how much the output deviates from the original style.
-    """
+  
     name: Literal["OutpaintingExecutor"] = "OutpaintingExecutor"
     value: Union[OutpaintingRequest, OutpaintingResponse]
     type: Literal["object"] = "object"
