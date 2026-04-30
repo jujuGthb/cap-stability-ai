@@ -61,7 +61,7 @@ class OutpaintingExecutor(Capsule):
             data["prompt"] = self.prompt
         if self.preset and self.preset != "disabled":
             data["style_preset"] = self.preset
-        seed = self.seed if self.seed else None
+        seed = self.seed if self.seed and self.seed != "disabled" else None
         if seed:
             seed = max(0, min(4294967294, seed))
             data["seed"] = seed

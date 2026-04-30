@@ -99,21 +99,6 @@ class InputApiKey(Config):
         json_schema_extra = {"shortDescription": "Stability AI API Key"}
 
 
-class Seed(Config):
-    """
-    Optional seed for reproducible generation results.
-    Must be between 0 and 4294967294. Leave at 0 to use a random seed.
-    """
-    name: Literal["seed"] = "seed"
-    value: int
-    type: Literal["number"] = "number"
-    field: Literal["textInput"] = "textInput"
-
-    class Config:
-        title = "Seed"
-        json_schema_extra = {"shortDescription": "0 = random seed"}
-
-
 class ModelCore(Config):
     """
     Balanced speed and quality. Recommended for most use cases.
@@ -390,6 +375,37 @@ class InputPreset(Config):
         json_schema_extra = {"shortDescription": "Optional style preset"}
 
 
+class SeedDisabled(Config):
+    name: Literal["disabled"] = "disabled"
+    value: Literal["disabled"] = "disabled"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Disabled"
+
+
+class SeedEnabled(Config):
+    name: Literal["enabled"] = "enabled"
+    value: int
+    type: Literal["number"] = "number"
+    field: Literal["textInput"] = "textInput"
+
+    class Config:
+        title = "Enabled"
+
+
+class Seed(Config):
+    name: Literal["seed"] = "seed"
+    value: Union[SeedDisabled, SeedEnabled]
+    type: Literal["object"] = "object"
+    field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
+
+    class Config:
+        title = "Seed"
+        json_schema_extra = {"shortDescription": "Optional seed for reproducible results"}
+
+
 class InvertMaskDisabled(Config):
     name: Literal["disabled"] = "disabled"
     value: Literal["disabled"] = "disabled"
@@ -436,10 +452,6 @@ class PromptDisabled(Config):
 
 
 class PromptEnabled(Config):
-    """
-    Optional prompt to guide the outpainting generation.
-    Describes what you want to see in the outpainted regions.
-    """
     name: Literal["enabled"] = "enabled"
     value: str = ""
     type: Literal["string"] = "string"
@@ -464,8 +476,6 @@ class Creativity(Config):
     """
     Controls how creative the outpainting is.
     Range: 0.0 to 1.0.
-    - 0.0: conservative, stays close to the original image style.
-    - 1.0: highly creative, generates more imaginative content.
     """
     name: Literal["creativity"] = "creativity"
     value: float
@@ -478,10 +488,6 @@ class Creativity(Config):
 
 
 class PaddingLeft(Config):
-    """
-    Number of pixels to outpaint on the left side of the image.
-    Maximum value is 2000. Set to 0 to skip this direction.
-    """
     name: Literal["paddingLeft"] = "paddingLeft"
     value: int
     type: Literal["number"] = "number"
@@ -493,10 +499,6 @@ class PaddingLeft(Config):
 
 
 class PaddingRight(Config):
-    """
-    Number of pixels to outpaint on the right side of the image.
-    Maximum value is 2000. Set to 0 to skip this direction.
-    """
     name: Literal["paddingRight"] = "paddingRight"
     value: int
     type: Literal["number"] = "number"
@@ -508,10 +510,6 @@ class PaddingRight(Config):
 
 
 class PaddingUp(Config):
-    """
-    Number of pixels to outpaint on the top side of the image.
-    Maximum value is 2000. Set to 0 to skip this direction.
-    """
     name: Literal["paddingUp"] = "paddingUp"
     value: int
     type: Literal["number"] = "number"
@@ -523,10 +521,6 @@ class PaddingUp(Config):
 
 
 class PaddingDown(Config):
-    """
-    Number of pixels to outpaint on the bottom side of the image.
-    Maximum value is 2000. Set to 0 to skip this direction.
-    """
     name: Literal["paddingDown"] = "paddingDown"
     value: int
     type: Literal["number"] = "number"
