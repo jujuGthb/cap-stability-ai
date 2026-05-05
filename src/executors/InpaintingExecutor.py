@@ -9,9 +9,6 @@ import requests
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
-import supervision as sv
-from supervision import Color
-
 from sdks.novavision.src.media.image import Image
 from sdks.novavision.src.base.capsule import Capsule
 from sdks.novavision.src.helper.executor import Executor
@@ -55,11 +52,17 @@ class InpaintingExecutor(Capsule):
             data["seed"] = seed
         return data
 
-    def _build_mask(self, img_value, detections):
+    def _build_mask(self, img_value):
         black_image = np.zeros_like(img_value)
-        mask_annotator = sv.MaskAnnotator(color=Color.WHITE, opacity=1.0)
-        mask = mask_annotator.annotate(black_image, detections)
-        mask = cv2.GaussianBlur(mask, (15, 15), 0)
+        for det in self.detections:
+            points = det.get("keyPoints", [])
+            if points:
+                polygon = np.array(
+                    [[int(p["cx"]), int(p["cy"])] for p in points],
+                    dtype=np.int32
+                )
+                cv2.fillPoly(black_image, [polygon], (255, 255, 255))
+        mask = cv2.GaussianBlur(black_image, (15, 15), 0)
         if self.invert_mask == "invertEnabled":
             mask = cv2.bitwise_not(mask)
         return mask
@@ -67,30 +70,18 @@ class InpaintingExecutor(Capsule):
     def run(self):
         img = Image.get_frame(img=self.image_selector, redis_db=self.redis_db)
 
-        print(f"[Inpainting] detections type: {type(self.detections)}")
-        print(f"[Inpainting] detections value: {self.detections}")
-
-        try:
-            detections = sv.Detections.from_ultralytics(self.detections)
-        except Exception as e:
-            print(f"[Inpainting] from_ultralytics failed: {e}, trying direct")
-            try:
-                detections = self.detections
-            except Exception as e2:
-                print(f"[Inpainting] failed: {e2}")
-                self.image = None
-                return build_response_inpainting(context=self)
-
-        if len(detections) == 0:
+        if not self.detections or len(self.detections) == 0:
             print("[Inpainting] No detections found")
             self.image = None
             return build_response_inpainting(context=self)
+
+        print(f"[Inpainting] {len(self.detections)} detection(s) found")
 
         success_img, encoded_image = cv2.imencode('.jpg', img.value)
         if not success_img:
             raise RuntimeError("Failed to encode input image")
 
-        mask = self._build_mask(img.value, detections)
+        mask = self._build_mask(img.value)
 
         success_mask, encoded_mask = cv2.imencode('.jpg', mask)
         if not success_mask:
