@@ -69,6 +69,7 @@ class OutpaintingExecutor(Capsule):
         return data
 
     def run(self):
+        
         left = self.padding_left or 0
         right = self.padding_right or 0
         up = self.padding_up or 0

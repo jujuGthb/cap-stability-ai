@@ -1,5 +1,5 @@
 """
-Stability AI Inpainting Executor: Inpaints regions of an image using a segmentation mask.
+Stability AI Inpainting Executor: Inpaints regions of an image using instance segmentation detections.
 """
 import os
 import sys
@@ -8,6 +8,9 @@ import numpy as np
 import requests
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
+
+import supervision as sv
+from supervision import Color
 
 from sdks.novavision.src.media.image import Image
 from sdks.novavision.src.base.capsule import Capsule
@@ -30,7 +33,7 @@ class InpaintingExecutor(Capsule):
         self.seed = self.request.get_param("seed")
         self.api_key = self.request.get_param("inputApiKey")
         self.image_selector = self.request.get_param("inputImage")
-        self.mask_selector = self.request.get_param("segmentationMask")
+        self.detections = self.request.get_param("segmentationMask")
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
@@ -52,14 +55,10 @@ class InpaintingExecutor(Capsule):
             data["seed"] = seed
         return data
 
-    def _build_mask(self, mask_img):
-        mask_value = mask_img.value
-        if len(mask_value.shape) == 3:
-            mask = cv2.cvtColor(mask_value, cv2.COLOR_BGR2GRAY)
-        else:
-            mask = mask_value.copy()
-        _, mask = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY)
-        mask = cv2.merge([mask, mask, mask])
+    def _build_mask(self, img_value, detections):
+        black_image = np.zeros_like(img_value)
+        mask_annotator = sv.MaskAnnotator(color=Color.WHITE, opacity=1.0)
+        mask = mask_annotator.annotate(black_image, detections)
         mask = cv2.GaussianBlur(mask, (15, 15), 0)
         if self.invert_mask == "invertEnabled":
             mask = cv2.bitwise_not(mask)
@@ -67,13 +66,32 @@ class InpaintingExecutor(Capsule):
 
     def run(self):
         img = Image.get_frame(img=self.image_selector, redis_db=self.redis_db)
-        mask_img = Image.get_frame(img=self.mask_selector, redis_db=self.redis_db)
+
+        print(f"[Inpainting] detections type: {type(self.detections)}")
+        print(f"[Inpainting] detections value: {self.detections}")
+
+        try:
+            detections = sv.Detections.from_ultralytics(self.detections)
+        except Exception as e:
+            print(f"[Inpainting] from_ultralytics failed: {e}, trying direct")
+            try:
+                detections = self.detections
+            except Exception as e2:
+                print(f"[Inpainting] failed: {e2}")
+                self.image = None
+                return build_response_inpainting(context=self)
+
+        if len(detections) == 0:
+            print("[Inpainting] No detections found")
+            self.image = None
+            return build_response_inpainting(context=self)
 
         success_img, encoded_image = cv2.imencode('.jpg', img.value)
         if not success_img:
             raise RuntimeError("Failed to encode input image")
 
-        mask = self._build_mask(mask_img)
+        mask = self._build_mask(img.value, detections)
+
         success_mask, encoded_mask = cv2.imencode('.jpg', mask)
         if not success_mask:
             raise RuntimeError("Failed to encode mask image")
@@ -81,6 +99,9 @@ class InpaintingExecutor(Capsule):
         image_bytes = encoded_image.tobytes()
         mask_bytes = encoded_mask.tobytes()
         payload = self._build_payload()
+
+        print(f"[Inpainting] payload: {payload}")
+        print(f"[Inpainting] api_key present: {bool(self.api_key)}")
 
         try:
             response = requests.post(
@@ -95,14 +116,18 @@ class InpaintingExecutor(Capsule):
                 },
                 data=payload
             )
+            print(f"[Inpainting] status code: {response.status_code}")
+            print(f"[Inpainting] response body: {response.text}")
             response.raise_for_status()
             image_array = np.frombuffer(response.content, dtype=np.uint8)
             numpy_image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
             img.value = numpy_image
             self.image = Image.set_frame(img=img, package_uID=self.uID, redis_db=self.redis_db)
         except requests.exceptions.HTTPError as e:
+            print(f"[Inpainting] HTTP error: {e.response.status_code} — {e.response.text}")
             self.image = None
         except Exception as e:
+            print(f"[Inpainting] unexpected error: {type(e).__name__}: {e}")
             self.image = None
 
         return build_response_inpainting(context=self)

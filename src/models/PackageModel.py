@@ -23,15 +23,11 @@ class InputImage(Input):
 
 class SegmentationMask(Input):
     name: Literal["segmentationMask"] = "segmentationMask"
-    value: Union[List[Image], Image]
-    type: str = "object"
+    value: list
+    type: Literal["list"] = "list"
 
-    @validator("type", pre=True, always=True)
-    def set_type_based_on_value(cls, value, values):
-        value = values.get("value")
-        if isinstance(value, list):
-            return "list"
-        return "object"
+    class Config:
+        title = "Segmentation Mask"
 
     class Config:
         title = "Segmentation Mask"
