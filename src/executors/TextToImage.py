@@ -25,7 +25,7 @@ ENDPOINTS = {
 }
 
 
-class TextToImageExecutor(Capsule):
+class TextToImage(Capsule):
     def __init__(self, request, bootstrap):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**self.request.data)

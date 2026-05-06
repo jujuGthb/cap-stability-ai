@@ -23,7 +23,7 @@ ENDPOINTS = {
 }
 
 
-class ImageToImageExecutor(Capsule):
+class ImageToImage(Capsule):
     def __init__(self, request, bootstrap):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**self.request.data)

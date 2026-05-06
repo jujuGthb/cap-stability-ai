@@ -19,7 +19,7 @@ API_HOST = "https://api.stability.ai"
 ENDPOINT = "/v2beta/stable-image/edit/inpaint"
 
 
-class InpaintingExecutor(Capsule):
+class Inpainting(Capsule):
     def __init__(self, request, bootstrap):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**self.request.data)

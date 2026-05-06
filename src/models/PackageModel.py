@@ -29,8 +29,6 @@ class SegmentationMask(Input):
     class Config:
         title = "Segmentation Mask"
 
-    class Config:
-        title = "Segmentation Mask"
 
 
 class OutputImage(Output):
@@ -129,6 +127,11 @@ class ModelSD3(Config):
 
 
 class InputModel(Config):
+    """
+    Select the Stability AI generation model.
+    Core is recommended for most use cases. Ultra gives the highest quality but is slower.
+    SD3 is best for artistic and illustrated outputs.
+    """
     name: Literal["inputModel"] = "inputModel"
     value: Union[ModelCore, ModelUltra, ModelSD3]
     type: Literal["object"] = "object"
@@ -563,12 +566,12 @@ class TextToImageResponse(Response):
     outputs: TextToImageOutputs
 
 
-class TextToImageExecutor(Config):
+class TextToImage(Config):
     """
     Generate a new image from a text prompt only.
     No input image required.
     """
-    name: Literal["TextToImageExecutor"] = "TextToImageExecutor"
+    name: Literal["TextToImage"] = "TextToImage"
     value: Union[TextToImageRequest, TextToImageResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
@@ -606,12 +609,12 @@ class ImageToImageResponse(Response):
     outputs: ImageToImageOutputs
 
 
-class ImageToImageExecutor(Config):
+class ImageToImage(Config):
     """
     Generate a new image based on an existing image and a text prompt.
     Use the Strength parameter to control how much the original image is preserved.
     """
-    name: Literal["ImageToImageExecutor"] = "ImageToImageExecutor"
+    name: Literal["ImageToImage"] = "ImageToImage"
     value: Union[ImageToImageRequest, ImageToImageResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
@@ -651,13 +654,13 @@ class InpaintingResponse(Response):
     outputs: InpaintingOutputs
 
 
-class InpaintingExecutor(Config):
+class Inpainting(Config):
     """
     Inpaint regions of an image using an instance segmentation mask.
     Replace detected objects or the background with AI-generated content
     guided by a text prompt.
     """
-    name: Literal["InpaintingExecutor"] = "InpaintingExecutor"
+    name: Literal["Inpainting"] = "Inpainting"
     value: Union[InpaintingRequest, InpaintingResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
@@ -699,8 +702,13 @@ class OutpaintingResponse(Response):
     outputs: OutpaintingOutputs
 
 
-class OutpaintingExecutor(Config):
-    name: Literal["OutpaintingExecutor"] = "OutpaintingExecutor"
+class Outpainting(Config):
+    """
+    Expand an image beyond its original borders using AI-generated content.
+    At least one direction (left, right, up, down) must be greater than 0.
+    Use the Creativity parameter to control how much the output deviates from the original style.
+    """
+    name: Literal["Outpainting"] = "Outpainting"
     value: Union[OutpaintingRequest, OutpaintingResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
@@ -711,8 +719,15 @@ class OutpaintingExecutor(Config):
 
 
 class ConfigExecutor(Config):
+    """
+    Select the generation task to perform.
+    Text to Image: generate from prompt only.
+    Image to Image: transform an existing image guided by a prompt.
+    Inpainting: replace detected objects using a segmentation mask.
+    Outpainting: expand the image beyond its original borders.
+    """
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[TextToImageExecutor, ImageToImageExecutor, InpaintingExecutor, OutpaintingExecutor]
+    value: Union[TextToImage, ImageToImage, Inpainting, Outpainting]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
