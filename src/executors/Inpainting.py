@@ -69,6 +69,9 @@ class Inpainting(Capsule):
 
     def run(self):
         img = Image.get_frame(img=self.image_selector, redis_db=self.redis_db)
+        
+        print(f"[Inpainting] invert_mask raw: {repr(self.invert_mask)}")
+        print(f"[Inpainting] invert_mask type: {type(self.invert_mask)}")
 
         if not self.detections or len(self.detections) == 0:
             print("[Inpainting] No detections found")
