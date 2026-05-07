@@ -23,8 +23,15 @@ class InputImage(Input):
 
 class SegmentationMask(Input):
     name: Literal["segmentationMask"] = "segmentationMask"
-    value: list
-    type: Literal["list"] = "list"
+    value: Union[List[Image], Image]
+    type: str = "object"
+
+    @validator("type", pre=True, always=True)
+    def set_type_based_on_value(cls, value, values):
+        value = values.get("value")
+        if isinstance(value, list):
+            return "list"
+        return "object"
 
     class Config:
         title = "Segmentation Mask"
@@ -102,6 +109,7 @@ class ModelCore(Config):
 
     class Config:
         title = "Core"
+        json_schema_extra = {"shortDescription": "Balanced speed and quality"}
 
 
 class ModelUltra(Config):
@@ -113,6 +121,7 @@ class ModelUltra(Config):
 
     class Config:
         title = "Ultra"
+        json_schema_extra = {"shortDescription": "Highest quality output"}
 
 
 class ModelSD3(Config):
@@ -124,6 +133,7 @@ class ModelSD3(Config):
 
     class Config:
         title = "SD3"
+        json_schema_extra = {"shortDescription": "Artistic and creative style"}
 
 
 class InputModel(Config):
@@ -160,6 +170,7 @@ class Strength(Config):
 
 
 class Preset3dModel(Config):
+    """Renders output with a 3D model aesthetic."""
     name: Literal["3d-model"] = "3d-model"
     value: Literal["3d-model"] = "3d-model"
     type: Literal["string"] = "string"
@@ -167,9 +178,11 @@ class Preset3dModel(Config):
 
     class Config:
         title = "3D Model"
+        json_schema_extra = {"shortDescription": "3D rendered aesthetic"}
 
 
 class PresetAnalogFilm(Config):
+    """Film grain and warm tones reminiscent of analog photography."""
     name: Literal["analog-film"] = "analog-film"
     value: Literal["analog-film"] = "analog-film"
     type: Literal["string"] = "string"
@@ -177,9 +190,11 @@ class PresetAnalogFilm(Config):
 
     class Config:
         title = "Analog Film"
+        json_schema_extra = {"shortDescription": "Film grain and warm tones"}
 
 
 class PresetAnime(Config):
+    """Japanese animation style with clean lines and vivid colors."""
     name: Literal["anime"] = "anime"
     value: Literal["anime"] = "anime"
     type: Literal["string"] = "string"
@@ -187,9 +202,11 @@ class PresetAnime(Config):
 
     class Config:
         title = "Anime"
+        json_schema_extra = {"shortDescription": "Japanese animation style"}
 
 
 class PresetCinematic(Config):
+    """Dramatic film-like lighting and composition."""
     name: Literal["cinematic"] = "cinematic"
     value: Literal["cinematic"] = "cinematic"
     type: Literal["string"] = "string"
@@ -197,9 +214,11 @@ class PresetCinematic(Config):
 
     class Config:
         title = "Cinematic"
+        json_schema_extra = {"shortDescription": "Dramatic film-like lighting"}
 
 
 class PresetComicBook(Config):
+    """Bold lines and flat colors typical of comic book illustration."""
     name: Literal["comic-book"] = "comic-book"
     value: Literal["comic-book"] = "comic-book"
     type: Literal["string"] = "string"
@@ -207,9 +226,11 @@ class PresetComicBook(Config):
 
     class Config:
         title = "Comic Book"
+        json_schema_extra = {"shortDescription": "Bold lines and flat colors"}
 
 
 class PresetDigitalArt(Config):
+    """Clean, vibrant digital illustration style."""
     name: Literal["digital-art"] = "digital-art"
     value: Literal["digital-art"] = "digital-art"
     type: Literal["string"] = "string"
@@ -217,9 +238,11 @@ class PresetDigitalArt(Config):
 
     class Config:
         title = "Digital Art"
+        json_schema_extra = {"shortDescription": "Clean digital illustration"}
 
 
 class PresetEnhance(Config):
+    """Enhances details and overall sharpness of the output."""
     name: Literal["enhance"] = "enhance"
     value: Literal["enhance"] = "enhance"
     type: Literal["string"] = "string"
@@ -227,9 +250,11 @@ class PresetEnhance(Config):
 
     class Config:
         title = "Enhance"
+        json_schema_extra = {"shortDescription": "Enhance detail and sharpness"}
 
 
 class PresetFantasyArt(Config):
+    """Magical and fantastical illustration style."""
     name: Literal["fantasy-art"] = "fantasy-art"
     value: Literal["fantasy-art"] = "fantasy-art"
     type: Literal["string"] = "string"
@@ -237,9 +262,11 @@ class PresetFantasyArt(Config):
 
     class Config:
         title = "Fantasy Art"
+        json_schema_extra = {"shortDescription": "Magical fantasy illustration"}
 
 
 class PresetIsometric(Config):
+    """Isometric perspective rendering with a game-like aesthetic."""
     name: Literal["isometric"] = "isometric"
     value: Literal["isometric"] = "isometric"
     type: Literal["string"] = "string"
@@ -247,9 +274,11 @@ class PresetIsometric(Config):
 
     class Config:
         title = "Isometric"
+        json_schema_extra = {"shortDescription": "Isometric game-like perspective"}
 
 
 class PresetLineArt(Config):
+    """Clean line drawing style with minimal shading."""
     name: Literal["line-art"] = "line-art"
     value: Literal["line-art"] = "line-art"
     type: Literal["string"] = "string"
@@ -257,9 +286,11 @@ class PresetLineArt(Config):
 
     class Config:
         title = "Line Art"
+        json_schema_extra = {"shortDescription": "Clean line drawing style"}
 
 
 class PresetLowPoly(Config):
+    """Geometric low-polygon art style."""
     name: Literal["low-poly"] = "low-poly"
     value: Literal["low-poly"] = "low-poly"
     type: Literal["string"] = "string"
@@ -267,9 +298,11 @@ class PresetLowPoly(Config):
 
     class Config:
         title = "Low Poly"
+        json_schema_extra = {"shortDescription": "Geometric low-polygon style"}
 
 
 class PresetModelingCompound(Config):
+    """Clay-like sculpted aesthetic resembling modeling compound."""
     name: Literal["modeling-compound"] = "modeling-compound"
     value: Literal["modeling-compound"] = "modeling-compound"
     type: Literal["string"] = "string"
@@ -277,9 +310,11 @@ class PresetModelingCompound(Config):
 
     class Config:
         title = "Modeling Compound"
+        json_schema_extra = {"shortDescription": "Clay-like sculpted aesthetic"}
 
 
 class PresetNeonPunk(Config):
+    """Vibrant neon colors with cyberpunk aesthetics."""
     name: Literal["neon-punk"] = "neon-punk"
     value: Literal["neon-punk"] = "neon-punk"
     type: Literal["string"] = "string"
@@ -287,9 +322,11 @@ class PresetNeonPunk(Config):
 
     class Config:
         title = "Neon Punk"
+        json_schema_extra = {"shortDescription": "Vibrant neon cyberpunk style"}
 
 
 class PresetOrigami(Config):
+    """Paper folding art style inspired by origami."""
     name: Literal["origami"] = "origami"
     value: Literal["origami"] = "origami"
     type: Literal["string"] = "string"
@@ -297,9 +334,11 @@ class PresetOrigami(Config):
 
     class Config:
         title = "Origami"
+        json_schema_extra = {"shortDescription": "Paper folding art style"}
 
 
 class PresetPhotographic(Config):
+    """Realistic photographic rendering with natural lighting."""
     name: Literal["photographic"] = "photographic"
     value: Literal["photographic"] = "photographic"
     type: Literal["string"] = "string"
@@ -307,9 +346,11 @@ class PresetPhotographic(Config):
 
     class Config:
         title = "Photographic"
+        json_schema_extra = {"shortDescription": "Realistic photographic rendering"}
 
 
 class PresetPixelArt(Config):
+    """Retro pixel art style with visible pixels."""
     name: Literal["pixel-art"] = "pixel-art"
     value: Literal["pixel-art"] = "pixel-art"
     type: Literal["string"] = "string"
@@ -317,9 +358,11 @@ class PresetPixelArt(Config):
 
     class Config:
         title = "Pixel Art"
+        json_schema_extra = {"shortDescription": "Retro pixel art style"}
 
 
 class PresetTileTexture(Config):
+    """Seamlessly tileable texture pattern."""
     name: Literal["tile-texture"] = "tile-texture"
     value: Literal["tile-texture"] = "tile-texture"
     type: Literal["string"] = "string"
@@ -327,9 +370,11 @@ class PresetTileTexture(Config):
 
     class Config:
         title = "Tile Texture"
+        json_schema_extra = {"shortDescription": "Seamlessly tileable texture"}
 
 
 class InputPresetDisabled(Config):
+    """No style preset applied. The model uses its default generation style."""
     name: Literal["presetDisabled"] = "presetDisabled"
     value: Literal["presetDisabled"] = "presetDisabled"
     type: Literal["string"] = "string"
@@ -337,9 +382,11 @@ class InputPresetDisabled(Config):
 
     class Config:
         title = "Disabled"
+        json_schema_extra = {"shortDescription": "Default generation style"}
 
 
 class InputPresetEnabled(Config):
+    """Apply one of the available style presets to guide the artistic output."""
     name: Literal["presetEnabled"] = "presetEnabled"
     value: Union[
         Preset3dModel, PresetAnalogFilm, PresetAnime, PresetCinematic,
@@ -353,6 +400,7 @@ class InputPresetEnabled(Config):
 
     class Config:
         title = "Enabled"
+        json_schema_extra = {"shortDescription": "Apply a style preset"}
 
 
 class InputPreset(Config):
@@ -372,6 +420,7 @@ class InputPreset(Config):
 
 
 class SeedDisabled(Config):
+    """Use a random seed for each generation. Results will vary on each run."""
     name: Literal["seedDisabled"] = "seedDisabled"
     value: Literal["seedDisabled"] = "seedDisabled"
     type: Literal["string"] = "string"
@@ -379,9 +428,14 @@ class SeedDisabled(Config):
 
     class Config:
         title = "Disabled"
+        json_schema_extra = {"shortDescription": "Random seed each run"}
 
 
 class SeedEnabled(Config):
+    """
+    Use a fixed integer seed for reproducible generation.
+    Enter a number between 0 and 4294967294.
+    """
     name: Literal["seedEnabled"] = "seedEnabled"
     value: int
     type: Literal["number"] = "number"
@@ -389,6 +443,7 @@ class SeedEnabled(Config):
 
     class Config:
         title = "Enabled"
+        json_schema_extra = {"shortDescription": "Fixed seed for reproducible results"}
 
 
 class Seed(Config):
@@ -409,6 +464,7 @@ class Seed(Config):
 
 
 class InvertMaskDisabled(Config):
+    """Inpaint the detected foreground object using the segmentation mask."""
     name: Literal["invertDisabled"] = "invertDisabled"
     value: Literal["invertDisabled"] = "invertDisabled"
     type: Literal["string"] = "string"
@@ -416,9 +472,11 @@ class InvertMaskDisabled(Config):
 
     class Config:
         title = "Disabled"
+        json_schema_extra = {"shortDescription": "Inpaint foreground object"}
 
 
 class InvertMaskEnabled(Config):
+    """Invert the segmentation mask to inpaint the background instead of the foreground."""
     name: Literal["invertEnabled"] = "invertEnabled"
     value: Literal["invertEnabled"] = "invertEnabled"
     type: Literal["string"] = "string"
@@ -426,6 +484,7 @@ class InvertMaskEnabled(Config):
 
     class Config:
         title = "Enabled"
+        json_schema_extra = {"shortDescription": "Inpaint background instead"}
 
 
 class InvertMask(Config):
@@ -445,6 +504,7 @@ class InvertMask(Config):
 
 
 class PromptDisabled(Config):
+    """No prompt provided. The model decides what to generate based on the original image context."""
     name: Literal["promptDisabled"] = "promptDisabled"
     value: Literal["promptDisabled"] = "promptDisabled"
     type: Literal["string"] = "string"
@@ -452,9 +512,11 @@ class PromptDisabled(Config):
 
     class Config:
         title = "Disabled"
+        json_schema_extra = {"shortDescription": "Model decides based on context"}
 
 
 class PromptEnabled(Config):
+    """Provide a text prompt to guide what appears in the outpainted regions."""
     name: Literal["promptEnabled"] = "promptEnabled"
     value: str = ""
     type: Literal["string"] = "string"
@@ -462,6 +524,7 @@ class PromptEnabled(Config):
 
     class Config:
         title = "Enabled"
+        json_schema_extra = {"shortDescription": "Describe the expanded area"}
 
 
 class OutpaintingPrompt(Config):
@@ -578,7 +641,7 @@ class TextToImage(Config):
 
     class Config:
         title = "Text to Image"
-        json_schema_extra = {"target": {"value": 0}}
+        json_schema_extra = {"target": {"value": 0}, "shortDescription": "Generate from text only"}
 
 
 class ImageToImageConfigs(Configs):
@@ -621,7 +684,7 @@ class ImageToImage(Config):
 
     class Config:
         title = "Image to Image"
-        json_schema_extra = {"target": {"value": 0}}
+        json_schema_extra = {"target": {"value": 0}, "shortDescription": "Transform an existing image"}
 
 
 class InpaintingConfigs(Configs):
@@ -667,7 +730,7 @@ class Inpainting(Config):
 
     class Config:
         title = "Inpainting"
-        json_schema_extra = {"target": {"value": 0}}
+        json_schema_extra = {"target": {"value": 0}, "shortDescription": "Replace masked regions"}
 
 
 class OutpaintingConfigs(Configs):
@@ -715,7 +778,7 @@ class Outpainting(Config):
 
     class Config:
         title = "Outpainting"
-        json_schema_extra = {"target": {"value": 0}}
+        json_schema_extra = {"target": {"value": 0}, "shortDescription": "Expand image borders"}
 
 
 class ConfigExecutor(Config):

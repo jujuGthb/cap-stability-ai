@@ -1,5 +1,5 @@
 """
-Stability AI Inpainting Executor: Inpaints regions of an image using instance segmentation detections.
+Stability AI Inpainting Executor: Inpaints regions of an image using a segmentation mask image.
 """
 import os
 import sys
@@ -30,7 +30,11 @@ class Inpainting(Capsule):
         self.seed = self.request.get_param("seed")
         self.api_key = self.request.get_param("inputApiKey")
         self.image_selector = self.request.get_param("inputImage")
-        self.detections = self.request.get_param("segmentationMask")
+        self.mask_selector = self.request.get_param("segmentationMask")
+
+        print(f"[Inpainting] invert_mask raw: {repr(self.invert_mask)}")
+        print(f"[Inpainting] prompt: {self.prompt}")
+        print(f"[Inpainting] api_key present: {bool(self.api_key)}")
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
@@ -52,39 +56,29 @@ class Inpainting(Capsule):
             data["seed"] = seed
         return data
 
-    def _build_mask(self, img_value):
-        black_image = np.zeros_like(img_value)
-        for det in self.detections:
-            points = det.get("keyPoints", [])
-            if points:
-                polygon = np.array(
-                    [[int(p["cx"]), int(p["cy"])] for p in points],
-                    dtype=np.int32
-                )
-                cv2.fillPoly(black_image, [polygon], (255, 255, 255))
-        mask = cv2.GaussianBlur(black_image, (15, 15), 0)
+    def _build_mask(self, mask_img):
+        mask_value = mask_img.value
+        if len(mask_value.shape) == 3:
+            mask = cv2.cvtColor(mask_value, cv2.COLOR_BGR2GRAY)
+        else:
+            mask = mask_value.copy()
+        _, mask = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY)
+        mask = cv2.merge([mask, mask, mask])
+        mask = cv2.GaussianBlur(mask, (15, 15), 0)
         if self.invert_mask == "invertEnabled":
+            print("[Inpainting] applying mask inversion")
             mask = cv2.bitwise_not(mask)
         return mask
 
     def run(self):
         img = Image.get_frame(img=self.image_selector, redis_db=self.redis_db)
-        
-        print(f"[Inpainting] invert_mask raw: {repr(self.invert_mask)}")
-        print(f"[Inpainting] invert_mask type: {type(self.invert_mask)}")
-
-        if not self.detections or len(self.detections) == 0:
-            print("[Inpainting] No detections found")
-            self.image = None
-            return build_response_inpainting(context=self)
-
-        print(f"[Inpainting] {len(self.detections)} detection(s) found")
+        mask_img = Image.get_frame(img=self.mask_selector, redis_db=self.redis_db)
 
         success_img, encoded_image = cv2.imencode('.jpg', img.value)
         if not success_img:
             raise RuntimeError("Failed to encode input image")
 
-        mask = self._build_mask(img.value)
+        mask = self._build_mask(mask_img)
 
         success_mask, encoded_mask = cv2.imencode('.jpg', mask)
         if not success_mask:
@@ -95,7 +89,6 @@ class Inpainting(Capsule):
         payload = self._build_payload()
 
         print(f"[Inpainting] payload: {payload}")
-        print(f"[Inpainting] api_key present: {bool(self.api_key)}")
 
         try:
             response = requests.post(
@@ -111,7 +104,10 @@ class Inpainting(Capsule):
                 data=payload
             )
             print(f"[Inpainting] status code: {response.status_code}")
-            print(f"[Inpainting] response body: {response.text}")
+            if response.status_code != 200:
+                print(f"[Inpainting] response body: {response.text}")
+            else:
+                print(f"[Inpainting] response size: {len(response.content)} bytes")
             response.raise_for_status()
             image_array = np.frombuffer(response.content, dtype=np.uint8)
             numpy_image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
